@@ -15,11 +15,17 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // Premium Gloss variants
+        premium: "bg-gradient-primary text-primary-foreground shadow-strong hover:shadow-accent transition-all duration-300 hover:scale-[1.02] font-semibold",
+        accent: "bg-accent text-accent-foreground shadow-accent hover:bg-accent/90 transition-all duration-300 hover:scale-[1.02] font-semibold",
+        minimal: "bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300",
+        luxe: "bg-gradient-secondary text-foreground shadow-soft hover:shadow-medium transition-all duration-300 hover:scale-[1.02] font-medium",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
+        xl: "h-14 rounded-lg px-12 text-base font-semibold",
         icon: "h-10 w-10",
       },
     },

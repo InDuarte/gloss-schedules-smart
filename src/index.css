@@ -2,41 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Gloss Premium Design System - Minimalista, Clean, Sofisticado e Luxuoso
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Gloss Brand Colors */
+    --background: 36 43% 98%; /* Warm White #FDFCFA */
+    --foreground: 0 0% 4%; /* Deep Black #0A0A0A */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%; /* Pure White */
+    --card-foreground: 0 0% 4%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 0 0% 4%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 4%; /* Deep Black #0A0A0A */
+    --primary-foreground: 36 43% 98%; /* Warm White */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 36 33% 85%; /* Beige/Sand #E8DCCA */
+    --secondary-foreground: 0 0% 4%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 44 23% 93%; /* Warm Light Gray #F2F0EB */
+    --muted-foreground: 0 0% 61%; /* Medium Gray #9C9C9C */
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 13 57% 61%; /* Terracota #D77A61 */
+    --accent-foreground: 36 43% 98%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 36 43% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 44 23% 93%;
+    --input: 44 23% 93%;
+    --ring: 13 57% 61%; /* Terracota focus ring */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* More premium rounded corners */
+    
+    /* Premium Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0, 0%, 4%), hsl(0, 0%, 15%));
+    --gradient-secondary: linear-gradient(135deg, hsl(36, 33%, 85%), hsl(44, 23%, 93%));
+    --gradient-accent: linear-gradient(135deg, hsl(13, 57%, 61%), hsl(13, 67%, 71%));
+    --gradient-hero: linear-gradient(135deg, hsl(36, 43%, 98%), hsl(44, 23%, 95%));
+    
+    /* Premium Shadows */
+    --shadow-soft: 0 4px 20px -2px hsl(0 0% 4% / 0.08);
+    --shadow-medium: 0 8px 30px -4px hsl(0 0% 4% / 0.12);
+    --shadow-strong: 0 16px 40px -8px hsl(0 0% 4% / 0.16);
+    --shadow-accent: 0 8px 25px -4px hsl(13 57% 61% / 0.25);
+    
+    /* Premium Typography */
+    --font-display: 'Inter', system-ui, sans-serif;
+    --font-body: 'Inter', system-ui, sans-serif;
+    
+    /* Smooth Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
     --sidebar-background: 0 0% 98%;
 

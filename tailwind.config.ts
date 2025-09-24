@@ -57,6 +57,24 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        hover: "hsl(var(--hover))",
+        active: "hsl(var(--active))",
+        disabled: {
+          DEFAULT: "hsl(var(--disabled))",
+          foreground: "hsl(var(--disabled-foreground))",
+        },
       },
       fontFamily: {
         display: "var(--font-display)",
@@ -67,12 +85,15 @@ export default {
         "gradient-secondary": "var(--gradient-secondary)",
         "gradient-accent": "var(--gradient-accent)",
         "gradient-hero": "var(--gradient-hero)",
+        "gradient-terracotta": "var(--gradient-terracotta)",
       },
       boxShadow: {
         soft: "var(--shadow-soft)",
         medium: "var(--shadow-medium)",
         strong: "var(--shadow-strong)",
         accent: "var(--shadow-accent)",
+        terracotta: "var(--shadow-terracotta)",
+        glow: "var(--shadow-glow)",
       },
       transitionTimingFunction: {
         smooth: "var(--transition-smooth)",

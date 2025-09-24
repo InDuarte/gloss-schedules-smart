@@ -16,10 +16,13 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         // Premium Gloss variants
-        premium: "bg-gradient-primary text-primary-foreground shadow-strong hover:shadow-accent transition-all duration-300 hover:scale-[1.02] font-semibold",
-        accent: "bg-accent text-accent-foreground shadow-accent hover:bg-accent/90 transition-all duration-300 hover:scale-[1.02] font-semibold",
-        minimal: "bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300",
+        premium: "bg-gradient-primary text-primary-foreground shadow-strong hover:shadow-terracotta transition-all duration-300 hover:scale-[1.02] font-semibold",
+        accent: "bg-gradient-terracotta text-accent-foreground shadow-terracotta hover:shadow-glow hover:scale-[1.02] transition-all duration-300 font-semibold border-0",
+        minimal: "bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-all duration-300 font-medium",
         luxe: "bg-gradient-secondary text-foreground shadow-soft hover:shadow-medium transition-all duration-300 hover:scale-[1.02] font-medium",
+        success: "bg-success text-success-foreground hover:bg-success/90 transition-colors",
+        warning: "bg-warning text-warning-foreground hover:bg-warning/90 transition-colors",
+        info: "bg-info text-info-foreground hover:bg-info/90 transition-colors",
       },
       size: {
         default: "h-10 px-4 py-2",

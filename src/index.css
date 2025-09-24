@@ -8,7 +8,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Gloss Brand Colors */
+    /* Gloss Premium Color System - Exact Colors */
     --background: 36 43% 98%; /* Warm White #FDFCFA */
     --foreground: 0 0% 4%; /* Deep Black #0A0A0A */
 
@@ -21,13 +21,13 @@ All colors MUST be HSL.
     --primary: 0 0% 4%; /* Deep Black #0A0A0A */
     --primary-foreground: 36 43% 98%; /* Warm White */
 
-    --secondary: 36 33% 85%; /* Beige/Sand #E8DCCA */
+    --secondary: 36 33% 85%; /* Beige Sand #E8DCCA */
     --secondary-foreground: 0 0% 4%;
 
     --muted: 44 23% 93%; /* Warm Light Gray #F2F0EB */
     --muted-foreground: 0 0% 61%; /* Medium Gray #9C9C9C */
 
-    --accent: 13 57% 61%; /* Terracota #D77A61 */
+    --accent: 13 57% 61%; /* Terracotta #D77A61 */
     --accent-foreground: 36 43% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -35,29 +35,51 @@ All colors MUST be HSL.
 
     --border: 44 23% 93%;
     --input: 44 23% 93%;
-    --ring: 13 57% 61%; /* Terracota focus ring */
+    --ring: 13 57% 61%; /* Terracotta focus ring */
 
-    --radius: 0.75rem; /* More premium rounded corners */
+    --radius: 0.75rem;
+    
+    /* Status Colors */
+    --success: 120 60% 50%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --info: 217 91% 60%;
+    --info-foreground: 0 0% 100%;
+    
+    /* Interactive States */
+    --hover: 13 57% 71%;
+    --active: 13 57% 51%;
+    --disabled: 44 23% 88%;
+    --disabled-foreground: 0 0% 71%;
     
     /* Premium Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0, 0%, 4%), hsl(0, 0%, 15%));
-    --gradient-secondary: linear-gradient(135deg, hsl(36, 33%, 85%), hsl(44, 23%, 93%));
-    --gradient-accent: linear-gradient(135deg, hsl(13, 57%, 61%), hsl(13, 67%, 71%));
-    --gradient-hero: linear-gradient(135deg, hsl(36, 43%, 98%), hsl(44, 23%, 95%));
+    --gradient-primary: linear-gradient(135deg, hsl(0, 0%, 4%) 0%, hsl(0, 0%, 15%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(36, 33%, 85%) 0%, hsl(44, 23%, 93%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(13, 57%, 61%) 0%, hsl(13, 67%, 71%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(36, 43%, 98%) 0%, hsl(44, 23%, 95%) 100%);
+    --gradient-terracotta: linear-gradient(135deg, hsl(13, 57%, 61%) 0%, hsl(20, 65%, 55%) 100%);
     
-    /* Premium Shadows */
+    /* Luxury Shadows */
     --shadow-soft: 0 4px 20px -2px hsl(0 0% 4% / 0.08);
     --shadow-medium: 0 8px 30px -4px hsl(0 0% 4% / 0.12);
     --shadow-strong: 0 16px 40px -8px hsl(0 0% 4% / 0.16);
     --shadow-accent: 0 8px 25px -4px hsl(13 57% 61% / 0.25);
+    --shadow-terracotta: 0 12px 35px -6px hsl(13 57% 61% / 0.3);
+    --shadow-glow: 0 0 30px hsl(13 57% 61% / 0.15);
     
-    /* Premium Typography */
-    --font-display: 'Inter', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
+    /* Typography */
+    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
     
-    /* Smooth Transitions */
+    /* Premium Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-elastic: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Layout */
+    --container-max: 1200px;
+    --spacing-section: 5rem;
 
     --sidebar-background: 0 0% 98%;
 

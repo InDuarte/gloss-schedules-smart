@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Calendar, Users, BarChart3, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
   return (
@@ -36,12 +37,16 @@ export const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-            <Button variant="premium" size="xl" className="min-w-[200px]">
-              Começar Gratuitamente
-            </Button>
-            <Button variant="minimal" size="xl" className="min-w-[200px]">
-              Ver Demonstração
-            </Button>
+            <Link to="/auth">
+              <Button variant="accent" size="xl" className="min-w-[200px]">
+                Começar Gratuitamente
+              </Button>
+            </Link>
+            <Link to="/booking">
+              <Button variant="minimal" size="xl" className="min-w-[200px]">
+                Ver Demonstração
+              </Button>
+            </Link>
           </div>
 
           {/* Stats/Features Preview */}

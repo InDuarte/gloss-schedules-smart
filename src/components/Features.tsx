@@ -10,6 +10,8 @@ import {
   Shield,
   Zap
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const features = [
   {
@@ -119,12 +121,16 @@ export const Features = () => {
               Junte-se aos profissionais que já escolheram a excelência do Gloss
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="px-8 py-4 bg-accent text-accent-foreground rounded-xl font-semibold shadow-accent hover:shadow-strong transition-all duration-300 hover:scale-105">
-                Começar Teste Grátis
-              </button>
-              <button className="px-8 py-4 bg-transparent border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary hover:text-primary-foreground transition-all duration-300">
-                Agendar Demo
-              </button>
+              <Link to="/auth">
+                <Button variant="accent" size="lg" className="px-8 py-4">
+                  Começar Teste Grátis
+                </Button>
+              </Link>
+              <Link to="/booking">
+                <Button variant="minimal" size="lg" className="px-8 py-4">
+                  Agendar Demo
+                </Button>
+              </Link>
             </div>
           </div>
         </div>

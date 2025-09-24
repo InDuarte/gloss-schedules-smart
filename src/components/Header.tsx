@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export const Header = () => {
   return (
@@ -27,12 +28,16 @@ export const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
-            <Button variant="minimal" size="sm">
-              Login
-            </Button>
-            <Button variant="accent" size="sm">
-              Começar Grátis
-            </Button>
+            <Link to="/auth">
+              <Button variant="minimal" size="sm">
+                Login
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button variant="accent" size="sm">
+                Começar Grátis
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

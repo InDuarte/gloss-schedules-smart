@@ -14,16 +14,521 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agendamentos: {
+        Row: {
+          cliente_id: string
+          created_at: string
+          data_agendamento: string
+          hora_fim: string
+          hora_inicio: string
+          id: string
+          observacoes: string | null
+          profissional_id: string
+          salao_id: string
+          servico_id: string
+          status: Database["public"]["Enums"]["booking_status"] | null
+          updated_at: string
+          valor_pago: number | null
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string
+          data_agendamento: string
+          hora_fim: string
+          hora_inicio: string
+          id?: string
+          observacoes?: string | null
+          profissional_id: string
+          salao_id: string
+          servico_id: string
+          status?: Database["public"]["Enums"]["booking_status"] | null
+          updated_at?: string
+          valor_pago?: number | null
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string
+          data_agendamento?: string
+          hora_fim?: string
+          hora_inicio?: string
+          id?: string
+          observacoes?: string | null
+          profissional_id?: string
+          salao_id?: string
+          servico_id?: string
+          status?: Database["public"]["Enums"]["booking_status"] | null
+          updated_at?: string
+          valor_pago?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agendamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agendamentos_profissional_id_fkey"
+            columns: ["profissional_id"]
+            isOneToOne: false
+            referencedRelation: "profissionais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agendamentos_salao_id_fkey"
+            columns: ["salao_id"]
+            isOneToOne: false
+            referencedRelation: "saloes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agendamentos_servico_id_fkey"
+            columns: ["servico_id"]
+            isOneToOne: false
+            referencedRelation: "servicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assinaturas: {
+        Row: {
+          created_at: string
+          data_fim: string | null
+          data_inicio: string
+          id: string
+          plano: Database["public"]["Enums"]["plan_type"]
+          salao_id: string
+          status: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          valor_mensal: number
+        }
+        Insert: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          id?: string
+          plano?: Database["public"]["Enums"]["plan_type"]
+          salao_id: string
+          status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          valor_mensal: number
+        }
+        Update: {
+          created_at?: string
+          data_fim?: string | null
+          data_inicio?: string
+          id?: string
+          plano?: Database["public"]["Enums"]["plan_type"]
+          salao_id?: string
+          status?: Database["public"]["Enums"]["subscription_status"] | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          valor_mensal?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assinaturas_salao_id_fkey"
+            columns: ["salao_id"]
+            isOneToOne: false
+            referencedRelation: "saloes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clientes: {
+        Row: {
+          created_at: string
+          data_nascimento: string | null
+          email: string | null
+          id: string
+          nome: string
+          observacoes: string | null
+          salao_id: string
+          telefone: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          data_nascimento?: string | null
+          email?: string | null
+          id?: string
+          nome: string
+          observacoes?: string | null
+          salao_id: string
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          data_nascimento?: string | null
+          email?: string | null
+          id?: string
+          nome?: string
+          observacoes?: string | null
+          salao_id?: string
+          telefone?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clientes_salao_id_fkey"
+            columns: ["salao_id"]
+            isOneToOne: false
+            referencedRelation: "saloes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      configuracoes_globais: {
+        Row: {
+          email_suporte: string | null
+          id: string
+          preco_avancado: number | null
+          preco_basico: number | null
+          preco_premium: number | null
+          texto_landing: string | null
+          updated_at: string
+          whatsapp_suporte: string | null
+        }
+        Insert: {
+          email_suporte?: string | null
+          id?: string
+          preco_avancado?: number | null
+          preco_basico?: number | null
+          preco_premium?: number | null
+          texto_landing?: string | null
+          updated_at?: string
+          whatsapp_suporte?: string | null
+        }
+        Update: {
+          email_suporte?: string | null
+          id?: string
+          preco_avancado?: number | null
+          preco_basico?: number | null
+          preco_premium?: number | null
+          texto_landing?: string | null
+          updated_at?: string
+          whatsapp_suporte?: string | null
+        }
+        Relationships: []
+      }
+      cupons: {
+        Row: {
+          ativo: boolean | null
+          codigo: string
+          created_at: string
+          global: boolean | null
+          id: string
+          limite_uso: number | null
+          salao_id: string | null
+          tipo: Database["public"]["Enums"]["coupon_type"]
+          updated_at: string
+          usado_vezes: number | null
+          validade: string | null
+          valor: number
+        }
+        Insert: {
+          ativo?: boolean | null
+          codigo: string
+          created_at?: string
+          global?: boolean | null
+          id?: string
+          limite_uso?: number | null
+          salao_id?: string | null
+          tipo: Database["public"]["Enums"]["coupon_type"]
+          updated_at?: string
+          usado_vezes?: number | null
+          validade?: string | null
+          valor: number
+        }
+        Update: {
+          ativo?: boolean | null
+          codigo?: string
+          created_at?: string
+          global?: boolean | null
+          id?: string
+          limite_uso?: number | null
+          salao_id?: string | null
+          tipo?: Database["public"]["Enums"]["coupon_type"]
+          updated_at?: string
+          usado_vezes?: number | null
+          validade?: string | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cupons_salao_id_fkey"
+            columns: ["salao_id"]
+            isOneToOne: false
+            referencedRelation: "saloes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mensagens_suporte: {
+        Row: {
+          created_at: string
+          id: string
+          mensagem: string
+          respondido: boolean | null
+          resposta: string | null
+          salao_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mensagem: string
+          respondido?: boolean | null
+          resposta?: string | null
+          salao_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mensagem?: string
+          respondido?: boolean | null
+          resposta?: string | null
+          salao_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mensagens_suporte_salao_id_fkey"
+            columns: ["salao_id"]
+            isOneToOne: false
+            referencedRelation: "saloes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          salao_id: string | null
+          telefone: string | null
+          tipo: Database["public"]["Enums"]["user_type"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          salao_id?: string | null
+          telefone?: string | null
+          tipo?: Database["public"]["Enums"]["user_type"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          salao_id?: string | null
+          telefone?: string | null
+          tipo?: Database["public"]["Enums"]["user_type"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profissionais: {
+        Row: {
+          ativo: boolean | null
+          created_at: string
+          especialidades: string[] | null
+          foto_url: string | null
+          id: string
+          nome: string
+          salao_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string
+          especialidades?: string[] | null
+          foto_url?: string | null
+          id?: string
+          nome: string
+          salao_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string
+          especialidades?: string[] | null
+          foto_url?: string | null
+          id?: string
+          nome?: string
+          salao_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profissionais_salao_id_fkey"
+            columns: ["salao_id"]
+            isOneToOne: false
+            referencedRelation: "saloes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saloes: {
+        Row: {
+          admin_id: string | null
+          ativo: boolean | null
+          created_at: string
+          email: string | null
+          endereco: string | null
+          horario_funcionamento: Json | null
+          id: string
+          link_personalizado: string | null
+          logo_url: string | null
+          mensagens_whatsapp: Json | null
+          nome: string
+          politica_cancelamento: string | null
+          telefone: string | null
+          tema_cores: Json | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          admin_id?: string | null
+          ativo?: boolean | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          horario_funcionamento?: Json | null
+          id?: string
+          link_personalizado?: string | null
+          logo_url?: string | null
+          mensagens_whatsapp?: Json | null
+          nome: string
+          politica_cancelamento?: string | null
+          telefone?: string | null
+          tema_cores?: Json | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          admin_id?: string | null
+          ativo?: boolean | null
+          created_at?: string
+          email?: string | null
+          endereco?: string | null
+          horario_funcionamento?: Json | null
+          id?: string
+          link_personalizado?: string | null
+          logo_url?: string | null
+          mensagens_whatsapp?: Json | null
+          nome?: string
+          politica_cancelamento?: string | null
+          telefone?: string | null
+          tema_cores?: Json | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      servicos: {
+        Row: {
+          ativo: boolean | null
+          created_at: string
+          descricao: string | null
+          duracao_minutos: number
+          id: string
+          nome: string
+          preco: number
+          profissional_id: string | null
+          salao_id: string
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          duracao_minutos?: number
+          id?: string
+          nome: string
+          preco: number
+          profissional_id?: string | null
+          salao_id: string
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          duracao_minutos?: number
+          id?: string
+          nome?: string
+          preco?: number
+          profissional_id?: string | null
+          salao_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "servicos_profissional_id_fkey"
+            columns: ["profissional_id"]
+            isOneToOne: false
+            referencedRelation: "profissionais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "servicos_salao_id_fkey"
+            columns: ["salao_id"]
+            isOneToOne: false
+            referencedRelation: "saloes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_type: {
+        Args: { user_uuid: string }
+        Returns: Database["public"]["Enums"]["user_type"]
+      }
+      is_super_admin: {
+        Args: { user_uuid: string }
+        Returns: boolean
+      }
+      user_belongs_to_salao: {
+        Args: { salao_uuid: string; user_uuid: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      booking_status:
+        | "agendado"
+        | "confirmado"
+        | "cancelado"
+        | "concluido"
+        | "falta"
+      coupon_type: "percentual" | "valor_fixo"
+      plan_type: "basico" | "avancado" | "premium"
+      subscription_status: "ativo" | "cancelado" | "pausado" | "vencido"
+      user_type: "cliente" | "profissional" | "admin" | "super_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +655,18 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      booking_status: [
+        "agendado",
+        "confirmado",
+        "cancelado",
+        "concluido",
+        "falta",
+      ],
+      coupon_type: ["percentual", "valor_fixo"],
+      plan_type: ["basico", "avancado", "premium"],
+      subscription_status: ["ativo", "cancelado", "pausado", "vencido"],
+      user_type: ["cliente", "profissional", "admin", "super_admin"],
+    },
   },
 } as const

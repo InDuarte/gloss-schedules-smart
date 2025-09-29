@@ -1,26 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Clock, User, Calendar, Check } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Clock, User, Calendar, Check, Loader2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
-interface Service {
-  id: number;
-  name: string;
-  description: string;
-  duration: string;
-  price: number;
-  category: string;
+interface DBService {
+  id: string;
+  nome: string;
+  descricao: string | null;
+  duracao_minutos: number;
+  preco: number;
+  salao_id: string;
 }
 
-interface Professional {
-  id: number;
-  name: string;
-  specialty: string;
-  rating: number;
-  avatar: string;
+interface DBProfessional {
+  id: string;
+  nome: string;
+  especialidades: string[] | null;
+  salao_id: string;
 }
 
 interface TimeSlot {
@@ -30,27 +31,56 @@ interface TimeSlot {
 
 export const Booking = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
+  const [selectedService, setSelectedService] = useState<DBService | null>(null);
+  const [selectedProfessional, setSelectedProfessional] = useState<DBProfessional | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const [isConfirming, setIsConfirming] = useState(false);
+  const [servicos, setServicos] = useState<DBService[]>([]);
+  const [profissionais, setProfissionais] = useState<DBProfessional[]>([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const services: Service[] = [
-    { id: 1, name: "Corte Feminino", description: "Corte moderno e personalizado", duration: "45min", price: 80, category: "Cabelo" },
-    { id: 2, name: "Corte Masculino", description: "Corte tradicional ou moderno", duration: "30min", price: 50, category: "Cabelo" },
-    { id: 3, name: "Coloração", description: "Tintura completa com produtos premium", duration: "2h", price: 150, category: "Cabelo" },
-    { id: 4, name: "Escova", description: "Escova modeladora profissional", duration: "30min", price: 45, category: "Cabelo" },
-    { id: 5, name: "Manicure", description: "Cuidado completo das unhas", duration: "45min", price: 35, category: "Unhas" },
-    { id: 6, name: "Pedicure", description: "Cuidado completo dos pés", duration: "60min", price: 40, category: "Unhas" },
-  ];
+  // Load services and professionals from database
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const professionals: Professional[] = [
-    { id: 1, name: "Ana Costa", specialty: "Especialista em Cortes Femininos", rating: 4.9, avatar: "AC" },
-    { id: 2, name: "Carlos Lima", specialty: "Barbeiro Profissional", rating: 4.8, avatar: "CL" },
-    { id: 3, name: "Lucia Mendes", specialty: "Nail Designer", rating: 4.9, avatar: "LM" },
-    { id: 4, name: "Pedro Silva", specialty: "Colorista Expert", rating: 4.7, avatar: "PS" },
-  ];
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      
+      // Load services
+      const { data: servicosData, error: servicosError } = await supabase
+        .from('servicos')
+        .select('*')
+        .eq('ativo', true);
+      
+      if (servicosError) throw servicosError;
+      setServicos(servicosData || []);
+
+      // Load professionals
+      const { data: profissionaisData, error: profissionaisError } = await supabase
+        .from('profissionais')
+        .select('*')
+        .eq('ativo', true);
+      
+      if (profissionaisError) throw profissionaisError;
+      setProfissionais(profissionaisData || []);
+    } catch (error: any) {
+      console.error('Error loading data:', error);
+      toast({
+        title: "Erro ao carregar dados",
+        description: "Não foi possível carregar os serviços e profissionais.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const timeSlots: TimeSlot[] = [
     { time: "09:00", available: true },
@@ -67,12 +97,109 @@ export const Booking = () => {
     { time: "16:30", available: true },
   ];
 
-  const handleConfirmBooking = () => {
-    toast({
-      title: "Agendamento confirmado!",
-      description: `Seu horário com ${selectedProfessional?.name} está confirmado para ${selectedDate} às ${selectedTime}.`,
-    });
-    // Redirect to dashboard or confirmation page
+  const handleConfirmBooking = async () => {
+    if (!user) {
+      toast({
+        title: "Login necessário",
+        description: "Você precisa estar logado para fazer um agendamento.",
+        variant: "destructive",
+      });
+      navigate('/auth');
+      return;
+    }
+
+    if (!selectedService || !selectedProfessional || !selectedDate || !selectedTime) {
+      toast({
+        title: "Dados incompletos",
+        description: "Por favor, preencha todos os dados do agendamento.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsConfirming(true);
+
+    try {
+      // Get or create client record
+      const { data: clienteData, error: clienteError } = await supabase
+        .from('clientes')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      let clienteId = clienteData?.id;
+
+      if (!clienteId) {
+        // Create client if doesn't exist
+        const { data: newCliente, error: newClienteError } = await supabase
+          .from('clientes')
+          .insert([{
+            nome: user.email || 'Cliente',
+            email: user.email,
+            salao_id: servicos[0]?.salao_id,
+          }])
+          .select()
+          .single();
+
+        if (newClienteError) throw newClienteError;
+        clienteId = newCliente.id;
+      }
+
+      // Calculate end time
+      const [hour, minute] = selectedTime.split(':').map(Number);
+      const duration = selectedService.duracao_minutos;
+      const endHour = Math.floor((hour * 60 + minute + duration) / 60);
+      const endMinute = (hour * 60 + minute + duration) % 60;
+      const horaFim = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+      // Create booking
+      const { data: agendamento, error: agendamentoError } = await supabase
+        .from('agendamentos')
+        .insert([{
+          cliente_id: clienteId,
+          servico_id: selectedService.id,
+          profissional_id: selectedProfessional.id,
+          salao_id: selectedService.salao_id,
+          data_agendamento: selectedDate,
+          hora_inicio: selectedTime,
+          hora_fim: horaFim,
+          status: 'agendado' as const,
+          valor_pago: Number(selectedService.preco),
+        }])
+        .select()
+        .single();
+
+      if (agendamentoError) throw agendamentoError;
+
+      toast({
+        title: "Agendamento confirmado!",
+        description: `Seu horário está confirmado para ${selectedDate} às ${selectedTime}.`,
+      });
+
+      // Send WhatsApp notification (if configured)
+      try {
+        await supabase.functions.invoke('send-whatsapp', {
+          body: {
+            tipo: 'confirmacao',
+            agendamento_id: agendamento.id,
+          }
+        });
+      } catch (whatsappError) {
+        console.error('WhatsApp notification error:', whatsappError);
+        // Don't fail the booking if WhatsApp fails
+      }
+
+      navigate('/dashboard');
+    } catch (error: any) {
+      console.error('Booking error:', error);
+      toast({
+        title: "Erro ao confirmar agendamento",
+        description: error.message || "Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsConfirming(false);
+    }
   };
 
   const getStepTitle = () => {
@@ -142,7 +269,12 @@ export const Booking = () => {
         {/* Step 1: Choose Service */}
         {currentStep === 1 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {services.map((service) => (
+            {loading ? (
+              <p className="col-span-2 text-center text-muted-foreground">Carregando serviços...</p>
+            ) : servicos.length === 0 ? (
+              <p className="col-span-2 text-center text-muted-foreground">Nenhum serviço disponível</p>
+            ) : (
+              servicos.map((service) => (
               <Card
                 key={service.id}
                 className={`
@@ -155,33 +287,38 @@ export const Booking = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <h3 className="text-xl font-semibold text-foreground font-display">
-                        {service.name}
+                        {service.nome}
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        {service.description}
+                        {service.descricao || 'Serviço profissional'}
                       </p>
                     </div>
-                    <Badge variant="secondary">{service.category}</Badge>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center text-muted-foreground text-sm">
                       <Clock className="w-4 h-4 mr-1" />
-                      {service.duration}
+                      {service.duracao_minutos}min
                     </div>
                     <div className="text-2xl font-bold text-accent">
-                      R$ {service.price}
+                      R$ {Number(service.preco).toFixed(0)}
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
+              ))
+            )}
           </div>
         )}
 
         {/* Step 2: Choose Professional */}
         {currentStep === 2 && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {professionals.map((professional) => (
+            {loading ? (
+              <p className="col-span-2 text-center text-muted-foreground">Carregando profissionais...</p>
+            ) : profissionais.length === 0 ? (
+              <p className="col-span-2 text-center text-muted-foreground">Nenhum profissional disponível</p>
+            ) : (
+              profissionais.map((professional) => (
               <Card
                 key={professional.id}
                 className={`
@@ -193,24 +330,21 @@ export const Booking = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 bg-gradient-accent rounded-full flex items-center justify-center text-accent-foreground font-bold text-xl">
-                      {professional.avatar}
+                      {professional.nome.substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-foreground font-display">
-                        {professional.name}
+                        {professional.nome}
                       </h3>
                       <p className="text-muted-foreground text-sm">
-                        {professional.specialty}
+                        {professional.especialidades?.join(', ') || 'Profissional'}
                       </p>
-                      <div className="flex items-center mt-2">
-                        <span className="text-accent font-semibold">★ {professional.rating}</span>
-                        <span className="text-muted-foreground text-sm ml-2">(124 avaliações)</span>
-                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
+              ))
+            )}
           </div>
         )}
 
@@ -292,11 +426,11 @@ export const Booking = () => {
               <div className="bg-gradient-secondary p-6 rounded-xl space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Serviço</span>
-                  <span className="font-semibold text-foreground">{selectedService?.name}</span>
+                  <span className="font-semibold text-foreground">{selectedService?.nome}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Profissional</span>
-                  <span className="font-semibold text-foreground">{selectedProfessional?.name}</span>
+                  <span className="font-semibold text-foreground">{selectedProfessional?.nome}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Data</span>
@@ -308,12 +442,12 @@ export const Booking = () => {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Duração</span>
-                  <span className="font-semibold text-foreground">{selectedService?.duration}</span>
+                  <span className="font-semibold text-foreground">{selectedService?.duracao_minutos}min</span>
                 </div>
                 <div className="border-t border-border pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-xl font-semibold text-foreground">Total</span>
-                    <span className="text-2xl font-bold text-accent">R$ {selectedService?.price}</span>
+                    <span className="text-2xl font-bold text-accent">R$ {selectedService?.preco ? Number(selectedService.preco).toFixed(0) : '0'}</span>
                   </div>
                 </div>
               </div>
@@ -323,8 +457,16 @@ export const Booking = () => {
                 variant="accent"
                 size="lg"
                 className="w-full shadow-accent"
+                disabled={isConfirming}
               >
-                Confirmar Agendamento
+                {isConfirming ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Confirmando...
+                  </>
+                ) : (
+                  "Confirmar Agendamento"
+                )}
               </Button>
             </CardContent>
           </Card>

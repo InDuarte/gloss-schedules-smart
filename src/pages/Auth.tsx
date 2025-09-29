@@ -1,43 +1,117 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sparkles, User, Mail, Lock, Phone, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 export const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [loginData, setLoginData] = useState({ email: "", password: "" });
+  const [signupData, setSignupData] = useState({ nome: "", email: "", telefone: "", password: "" });
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { user, profile } = useAuth();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user && profile) {
+      switch (profile.tipo) {
+        case 'super_admin':
+          navigate('/super-admin');
+          break;
+        case 'admin':
+          navigate('/dashboard');
+          break;
+        case 'profissional':
+          navigate('/dashboard');
+          break;
+        default:
+          navigate('/booking');
+      }
+    }
+  }, [user, profile, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate login
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: loginData.email,
+        password: loginData.password,
+      });
+
+      if (error) throw error;
+
       toast({
         title: "Login realizado com sucesso!",
-        description: "Bem-vindo de volta ao Gloss.",
+        description: "Bem-vindo de volta ao StudioGloss.",
       });
+
+      // Navigation will be handled by useEffect
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast({
+        title: "Erro no login",
+        description: error.message || "Verifique suas credenciais e tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate signup
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: signupData.email,
+        password: signupData.password,
+        options: {
+          data: {
+            nome: signupData.nome,
+            telefone: signupData.telefone,
+            tipo: 'cliente',
+          },
+          emailRedirectTo: `${window.location.origin}/`,
+        }
+      });
+
+      if (error) throw error;
+
+      if (data.user?.identities?.length === 0) {
+        toast({
+          title: "Usuário já existe",
+          description: "Este email já está cadastrado. Faça login para continuar.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       toast({
         title: "Conta criada com sucesso!",
-        description: "Sua conta foi criada. Faça login para continuar.",
+        description: "Verifique seu email para confirmar a conta.",
       });
+      
+      setSignupData({ nome: "", email: "", telefone: "", password: "" });
+    } catch (error: any) {
+      console.error('Signup error:', error);
+      toast({
+        title: "Erro ao criar conta",
+        description: error.message || "Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -92,6 +166,8 @@ export const Auth = () => {
                         type="email"
                         placeholder="seu@email.com"
                         className="pl-10"
+                        value={loginData.email}
+                        onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                         required
                       />
                     </div>
@@ -106,6 +182,8 @@ export const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         className="pl-10"
+                        value={loginData.password}
+                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
                         required
                       />
                     </div>
@@ -140,6 +218,8 @@ export const Auth = () => {
                         type="text"
                         placeholder="Seu nome"
                         className="pl-10"
+                        value={signupData.nome}
+                        onChange={(e) => setSignupData({ ...signupData, nome: e.target.value })}
                         required
                       />
                     </div>
@@ -154,6 +234,8 @@ export const Auth = () => {
                         type="email"
                         placeholder="seu@email.com"
                         className="pl-10"
+                        value={signupData.email}
+                        onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
                         required
                       />
                     </div>
@@ -168,6 +250,8 @@ export const Auth = () => {
                         type="tel"
                         placeholder="(11) 99999-9999"
                         className="pl-10"
+                        value={signupData.telefone}
+                        onChange={(e) => setSignupData({ ...signupData, telefone: e.target.value })}
                         required
                       />
                     </div>
@@ -182,7 +266,10 @@ export const Auth = () => {
                         type="password"
                         placeholder="••••••••"
                         className="pl-10"
+                        value={signupData.password}
+                        onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
                         required
+                        minLength={6}
                       />
                     </div>
                   </div>

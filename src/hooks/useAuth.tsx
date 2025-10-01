@@ -16,7 +16,7 @@ interface Subscription {
   subscribed: boolean;
   product_id?: string;
   subscription_end?: string;
-  plano: 'gratuito' | 'basico' | 'avancado' | 'premium';
+  plano?: 'gratuito' | 'basico' | 'avancado' | 'premium';
 }
 
 interface AuthContextType {
@@ -78,13 +78,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         subscribed: data.subscribed || false,
         product_id: data.product_id,
         subscription_end: data.subscription_end,
-        plano: data.plano || 'gratuito'
+        plano: data.plano
       });
     } catch (error) {
       console.error('Error checking subscription:', error);
       setSubscription({
-        subscribed: false,
-        plano: 'gratuito'
+        subscribed: false
       });
     }
   };

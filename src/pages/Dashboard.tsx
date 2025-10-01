@@ -36,8 +36,17 @@ export const Dashboard = () => {
       navigate('/auth');
       return;
     }
+
+    // Redirect based on user type
+    if (profile) {
+      if (profile.tipo === 'super_admin') {
+        navigate('/super-admin');
+        return;
+      }
+    }
+    
     loadDashboardData();
-  }, [user, navigate]);
+  }, [user, profile, navigate]);
 
   const loadDashboardData = async () => {
     try {
@@ -130,11 +139,15 @@ export const Dashboard = () => {
               <Button variant="ghost" size="icon">
                 <Bell className="w-4 h-4" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <Settings className="w-4 h-4" />
+              <Button variant="ghost" size="icon" asChild>
+                <Link to="/settings">
+                  <Settings className="w-4 h-4" />
+                </Link>
               </Button>
-              <Button variant="ghost" size="icon">
-                <User className="w-4 h-4" />
+              <Button variant="ghost" size="icon" asChild>
+                <Link to="/professionals">
+                  <User className="w-4 h-4" />
+                </Link>
               </Button>
               <Button variant="ghost" size="icon" onClick={handleLogout}>
                 <LogOut className="w-4 h-4" />

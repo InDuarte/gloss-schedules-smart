@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sparkles, User, Mail, Lock, Phone, ArrowLeft } from "lucide-react";
+import { Sparkles, User, Mail, Lock, Phone, ArrowLeft, Building2, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,8 +12,18 @@ import { useAuth } from "@/hooks/useAuth";
 
 export const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<'cliente' | 'admin'>('cliente');
   const [loginData, setLoginData] = useState({ email: "", password: "" });
-  const [signupData, setSignupData] = useState({ nome: "", email: "", telefone: "", password: "" });
+  const [signupData, setSignupData] = useState({ 
+    nome: "", 
+    email: "", 
+    telefone: "", 
+    password: "",
+    // Dados do salão (só para admin)
+    nomeSalao: "",
+    enderecoSalao: "",
+    telefoneSalao: "",
+  });
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user, profile } = useAuth();
@@ -72,6 +82,17 @@ export const Auth = () => {
     setIsLoading(true);
     
     try {
+      // Validações específicas para dono de salão
+      if (userType === 'admin' && (!signupData.nomeSalao || !signupData.enderecoSalao)) {
+        toast({
+          title: "Dados incompletos",
+          description: "Preencha todos os dados do salão.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: signupData.email,
         password: signupData.password,
@@ -79,7 +100,7 @@ export const Auth = () => {
           data: {
             nome: signupData.nome,
             telefone: signupData.telefone,
-            tipo: 'cliente',
+            tipo: userType,
           },
           emailRedirectTo: `${window.location.origin}/`,
         }
@@ -96,12 +117,56 @@ export const Auth = () => {
         return;
       }
 
+      // Se for admin, criar o salão
+      if (userType === 'admin' && data.user) {
+        const { data: salaoData, error: salaoError } = await supabase
+          .from('saloes')
+          .insert({
+            nome: signupData.nomeSalao,
+            endereco: signupData.enderecoSalao,
+            telefone: signupData.telefoneSalao,
+            whatsapp: signupData.telefoneSalao,
+            email: signupData.email,
+            admin_id: data.user.id,
+          })
+          .select()
+          .single();
+
+        if (salaoError) {
+          console.error('Erro ao criar salão:', salaoError);
+          toast({
+            title: "Atenção",
+            description: "Conta criada, mas houve erro ao criar o salão. Entre em contato com o suporte.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Atualizar profile com salao_id
+        if (salaoData) {
+          await supabase
+            .from('profiles')
+            .update({ salao_id: salaoData.id })
+            .eq('user_id', data.user.id);
+        }
+      }
+
       toast({
         title: "Conta criada com sucesso!",
-        description: "Verifique seu email para confirmar a conta.",
+        description: userType === 'admin' 
+          ? "Verifique seu email para confirmar a conta e começar a configurar seu salão." 
+          : "Verifique seu email para confirmar a conta.",
       });
       
-      setSignupData({ nome: "", email: "", telefone: "", password: "" });
+      setSignupData({ 
+        nome: "", 
+        email: "", 
+        telefone: "", 
+        password: "",
+        nomeSalao: "",
+        enderecoSalao: "",
+        telefoneSalao: "",
+      });
     } catch (error: any) {
       console.error('Signup error:', error);
       toast({
@@ -208,7 +273,39 @@ export const Auth = () => {
               </TabsContent>
 
               <TabsContent value="signup" className="space-y-6">
+                {/* Escolher tipo de usuário */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <button
+                    type="button"
+                    onClick={() => setUserType('cliente')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      userType === 'cliente' 
+                        ? 'border-accent bg-accent/10' 
+                        : 'border-border hover:border-accent/50'
+                    }`}
+                  >
+                    <Users className="w-8 h-8 mx-auto mb-2 text-accent" />
+                    <p className="font-semibold text-foreground">Sou Cliente</p>
+                    <p className="text-xs text-muted-foreground mt-1">Quero agendar serviços</p>
+                  </button>
+                  
+                  <button
+                    type="button"
+                    onClick={() => setUserType('admin')}
+                    className={`p-4 rounded-lg border-2 transition-all ${
+                      userType === 'admin' 
+                        ? 'border-accent bg-accent/10' 
+                        : 'border-border hover:border-accent/50'
+                    }`}
+                  >
+                    <Building2 className="w-8 h-8 mx-auto mb-2 text-accent" />
+                    <p className="font-semibold text-foreground">Tenho um Salão</p>
+                    <p className="text-xs text-muted-foreground mt-1">Quero gerenciar agendamentos</p>
+                  </button>
+                </div>
+
                 <form onSubmit={handleSignup} className="space-y-4">
+                  {/* Dados pessoais */}
                   <div className="space-y-2">
                     <Label htmlFor="signup-name">Nome Completo</Label>
                     <div className="relative">
@@ -264,7 +361,7 @@ export const Auth = () => {
                       <Input
                         id="signup-password"
                         type="password"
-                        placeholder="••••••••"
+                        placeholder="Mínimo 6 caracteres"
                         className="pl-10"
                         value={signupData.password}
                         onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
@@ -274,6 +371,53 @@ export const Auth = () => {
                     </div>
                   </div>
 
+                  {/* Campos extras para dono de salão */}
+                  {userType === 'admin' && (
+                    <>
+                      <div className="pt-4 border-t border-border">
+                        <h3 className="font-semibold text-foreground mb-4 flex items-center">
+                          <Building2 className="w-4 h-4 mr-2 text-accent" />
+                          Dados do Salão
+                        </h3>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="salon-name">Nome do Salão</Label>
+                        <Input
+                          id="salon-name"
+                          type="text"
+                          placeholder="Studio Beauty"
+                          value={signupData.nomeSalao}
+                          onChange={(e) => setSignupData({ ...signupData, nomeSalao: e.target.value })}
+                          required={userType === 'admin'}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="salon-address">Endereço do Salão</Label>
+                        <Input
+                          id="salon-address"
+                          type="text"
+                          placeholder="Rua das Flores, 123 - Centro"
+                          value={signupData.enderecoSalao}
+                          onChange={(e) => setSignupData({ ...signupData, enderecoSalao: e.target.value })}
+                          required={userType === 'admin'}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="salon-phone">Telefone do Salão</Label>
+                        <Input
+                          id="salon-phone"
+                          type="tel"
+                          placeholder="(11) 3333-4444"
+                          value={signupData.telefoneSalao}
+                          onChange={(e) => setSignupData({ ...signupData, telefoneSalao: e.target.value })}
+                        />
+                      </div>
+                    </>
+                  )}
+
                   <Button
                     type="submit"
                     variant="accent"
@@ -281,7 +425,7 @@ export const Auth = () => {
                     className="w-full"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Criando conta..." : "Criar Conta"}
+                    {isLoading ? "Criando conta..." : userType === 'admin' ? "Criar Salão" : "Criar Conta"}
                   </Button>
                 </form>
               </TabsContent>

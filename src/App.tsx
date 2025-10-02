@@ -16,6 +16,8 @@ import { Clients } from "./pages/Clients";
 import { Services } from "./pages/Services";
 import { Professionals } from "./pages/Professionals";
 import { Settings } from "./pages/Settings";
+import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +42,8 @@ const App = () => (
             <Route path="/services" element={<Services />} />
             <Route path="/professionals" element={<Professionals />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

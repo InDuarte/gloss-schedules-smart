@@ -266,9 +266,12 @@ export const Auth = () => {
                 </form>
 
                 <div className="text-center">
-                  <button className="text-sm text-muted-foreground hover:text-accent transition-colors">
-                    Esqueceu sua senha?
-                  </button>
+                  <Link 
+                    to="/forgot-password" 
+                    className="text-sm text-muted-foreground hover:text-accent transition-colors"
+                  >
+                    Esqueceu a senha?
+                  </Link>
                 </div>
               </TabsContent>
 

@@ -206,7 +206,7 @@ export const Auth = () => {
               </div>
             </div>
             <CardTitle className="text-3xl font-display text-foreground">
-              Bem-vindo ao Gloss
+              Bem-vindo ao StudioGloss
             </CardTitle>
             <CardDescription className="text-muted-foreground">
               Sua plataforma premium de agendamento
